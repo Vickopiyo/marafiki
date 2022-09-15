@@ -1,4 +1,12 @@
+
+    <% if user_signed_in? %>
+    
+    
+    
+    <% if friend.user == current_user %>
+
 <div id="<%= dom_id friend %>">
+ 
   <p>
     <strong>First name:</strong>
     <%= friend.first_name %>
@@ -23,5 +31,14 @@
     <strong>Phone:</strong>
     <%= friend.phone %>
   </p>
-
+  <p>
+  <strong>User Id:</strong>
+  <%= friend.user_id %>
+</p>
+ 
 </div>
+<% end %>
+
+<% else %>
+<h2>Welcome to Ruby on Rails</h2>
+<% end %>

@@ -1,9 +1,14 @@
 class FriendsController < ApplicationController
   before_action :set_friend, only: %i[ show edit update destroy ]
+  before_action :authenticate_user!, except: [:index,:show]
+  # only on edit,des,update check if its the correct user
+  before_action :correct_user, only: [:edit, :destroy, :update]
 
   # GET /friends or /friends.json
   def index
+
     @friends = Friend.all
+   
   end
 
   # GET /friends/1 or /friends/1.json
@@ -12,7 +17,9 @@ class FriendsController < ApplicationController
 
   # GET /friends/new
   def new
-    @friend = Friend.new
+    # @friend = Friend.new
+     # asc every new instance of friend to the user by 
+     @friend = current_user.friends.build
   end
 
   # GET /friends/1/edit
@@ -21,7 +28,12 @@ class FriendsController < ApplicationController
 
   # POST /friends or /friends.json
   def create
-    @friend = Friend.new(friend_params)
+    # @friend = Friend.new(friend_params)
+
+      # asc every new instance of friend to the user by 
+    @friend = current_user.friends.build(friend_params)
+
+
 
     respond_to do |format|
       if @friend.save
@@ -57,6 +69,16 @@ class FriendsController < ApplicationController
     end
   end
 
+
+  # cchecking of correct user
+    def correct_user
+       @friend = current_user.friends.find_by(id: params[:id])
+       redirect_to friends_path, notice: "Not Authorised to edit this friend" if @friend.nil?
+    end
+
+
+
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_friend
@@ -65,6 +87,6 @@ class FriendsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def friend_params
-      params.require(:friend).permit(:first_name, :last_name, :email, :twitter, :phone)
+      params.require(:friend).permit(:first_name, :last_name, :email, :twitter, :phone,:user_id)
     end
 end
